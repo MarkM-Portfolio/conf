@@ -1,0 +1,8 @@
+*.conf linguist-language=Conf linguist-vendored=false
+*.conf_20230116124448 linguist-language=Conf_20230116124448 linguist-vendored=false
+*.default linguist-language=Default linguist-vendored=false
+*.gitignore linguist-language=Git linguist-vendored=false
+*.passwd linguist-language=Passwd linguist-vendored=false
+*.properties linguist-language=Properties linguist-vendored=false
+*.sample linguist-language=Sample linguist-vendored=false
+*.types linguist-language=Types linguist-vendored=false

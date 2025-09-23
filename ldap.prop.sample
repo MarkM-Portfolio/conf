@@ -1,0 +1,199 @@
+#
+# Sample LDAP Authentication & Authorization property file
+#
+
+# Realm identifying this LDAP Authentication & Authorization configuration.
+# Some web servers may use different LDAP servers or different LDAP base
+# DNs for different parts of the WEB repository that they're serving.
+# The realm name merely identifies this particular LDAP configuration, ie a
+# particular LDAP server, base DN, WEB server credentials, etc.  This
+# realm name will appear in error messages.
+ldap.realm=LDAP Realm
+
+# LDAP URL of the form: ldap://<hostName>/<BaseDN>
+#
+# <hostname> is the hostname of the LDAP server,
+#
+# <BaseDN> provides the root of the LDAP tree in which to perform
+# the search for the authentication.
+ldap.URL=ldap://sudan/o=Ace Industry,c=US
+
+# LDAP Group URL of the form: ldap://<hostName>/<BaseDN>
+#
+# <hostname> is the hostname of the LDAP server,
+#
+# <BaseDN> provides the root of the LDAP tree in which to perform
+# the search for groups.
+#
+# This property is only required if the LDAP URL for groups differs
+# from the URL specified by the ldap.URL property.
+#ldap.group.URL=ldap://sudan/o=Ace IndustryGroups,c=US
+
+# The transport over which to communicate with the LDAP server:
+# Possible values: TCP or SSL
+#
+# With SSL, a keyfile and key stash file are required.
+ldap.transport=TCP
+
+# The version of the LDAP protocol to use to speak to the LDAP  
+# server, determined by the protocol version used by the LDAP server.   
+# This directive is optional, the default is to use LDAP V3 protocol. 
+# Possible values are: 2 or 3
+#
+# ldap.version=3
+
+# The method to use to authenticate the WEB server to the LDAP server.
+# Possible values: None, Basic.
+#
+# For "none", the WEB server will provide no credentials at all
+# regarding its identity (other than its IP address).
+#
+# For "basic", the WEB server is required to identify itself
+# to the LDAP server using a distinguished name and password.
+ldap.application.authType=Basic
+
+# The DN by which the WEB server authenticates itself to the
+# LDAP server.
+ldap.application.DN=cn=Directory Manager,o=Ace Industry,c=US
+
+# Name of the stash file containing the encrypted password for
+# the WEB server to authenticate to the LDAP server when
+# 'ldap.application.authType' equals "Basic".  This stash file
+# may be created with the 'ldapstash' command.
+ldap.application.password.stashFile=ldap.sth
+
+# The method to use to authenticate the user requesting a
+# WEB resource to the LDAP server.  Possible values: Basic, Cert,
+# BasicIfNoCert
+#
+# With Basic, the browser is required to provide a username
+# and password, which the web server then uses to authenticate.
+# With Cert, the browser is required to provide a certificate,
+# and the web server uses the ldap.user.cert.filter to retrieve
+# the username to authenticate the user.
+ldap.user.authType=BasicIfNoCert
+
+# Filter used to convert (via an LDAP search) a user name provided
+# by the WEB client to a unique DN to be looked up on the LDAP
+# server.
+# ldap.user.name.filter=(&(objectclass=person)(cn=%v1 %v2))
+
+# The characters which are considered valid field separator
+# characters when parsing the user name which the user entered
+# into the browser's login dialog.  For example,
+# if '/' is the only field separator character and the user inputs
+# "Joe Smith/Acme", then '%v1' equals "Joe Smith" and '%v2' equals
+# "Acme".
+# Default field separators are: space, tab, and comma.
+# ldap.user.name.fieldSep=/
+
+# Filter used to convert (via an LDAP search) a user name to a unique
+# DN.  The field numbers of a certificate are as follows:
+#   %v1  - subject's common name
+#   %v2  - subject's organizational unit
+#   %v3  - subject's organization
+#   %v4  - subject's country
+#   %v5  - subject's locality
+#   %v6  - subject's state or province
+#   %v7  - subject's serial number
+#   %v8  - issuer's common name
+#   %v9  - issuer's organizational unit
+#   %v10 - issuer's organization
+#   %v11 - issuer's country
+#   %v12 - issuer's locality
+#   %v13 - issuer's state or province
+#
+ldap.user.cert.filter=(&(objectclass=person)(cn=%v1))
+
+# Filter used to convert (via an LDAP search) a group name to a
+# unique DN.
+ldap.group.name.filter=(&(cn=%v1)(|(objectclass=groupofnames)(objectclass=groupofuniquenames)))
+
+# Once a group entry is found in an LDAP directory, the group members
+# are extracted by using these attribute names.  The values of these
+# attributes must be the distinquished names of the members of the
+# group.
+ldap.group.memberAttributes=member uniquemember
+
+# Connections to the LDAP server are cached for performance.
+# This is the length of time (in seconds) to leave an unused
+# connection open to the LDAP server.
+ldap.idleConnection.timeout=600
+
+# If an LDAP server is down, we may thrash continually trying
+# to connect to it.  This is the length of time (in seconds)
+# to wait between failed attempts to connect.
+ldap.waitToRetryConnection.interval=300
+
+# The maximum time (in seconds) to wait for an LDAP search
+# operation to complete.
+ldap.search.timeout=10
+
+# Responses from the LDAP server are cached.  This is the maximum
+# length of time (in seconds) that these cached results may be
+# used.
+ldap.cache.timeout=600
+
+# Certificates are kept in a key database file.
+# When using SSL as the transport to talk to the LDAP server, the following
+# properties must be set to denote:
+#     - the name of the key database file; NOTE: The key database MUST
+#       be writable.
+#     - the stash file containing the encrypted password for the key
+#	database file.  Use the 'ldapstash' command to create this
+#	password file;
+#     - the label of the key (and certificate) from the key database file.
+#	This identifies the certificate from the key database file to use when
+#       authenticating the WEB Server to the LDAP server.
+#
+# Note: The ldap.key.label directive does not work on Solaris for IHS 1.3.19.
+#       As a workaround, please set the default key in the key database to
+#       to the label you wish to use.
+# ldap.key.fileName=
+# ldap.key.file.password.stashFile=
+# ldap.key.label=
+
+
+#   The following directives are used to search "subgroups" when
+#   specifying LdapRequire group directives.  Groups can contain both individual
+#   members and also other groups.  When doing a search for a group, if a 
+#   the member being authenticated is not a member of the required group,
+#   any subgroups of the required group will also be searched.
+#   An example:
+#     group1 ->   group2
+#     group2 ->   group3
+#     group3 ->   jane
+#   If I do a search for jane, and require her to be a member of group1
+#   the search will fail.  If I specifiy an ldap.group.search.depth>2
+#   the search will succeed.
+# 
+#
+#
+#   When searching a group to find all the groups that are members of the group
+#   you are searching, there are two directives to use.  The first is 
+#   ldap.group.uniqueattribute.  If your ldap server differenties users and groups within 
+#   a group, this is the place to specifiy that attribute.  For example,  if you specify
+#   uniquegroup as the attributes, and the all results returned are unique groups within that 
+#   group, then you can leave the ldap.group.dnattributes blank.  For some ldap server setups, 
+#   no differentiating is done between user and groups within a group.  In that case, you need to 
+#   still specify the ldap.group.uniqueattribute directive to return all the users and groups 
+#   within a group, but in addition, you will need to specifiy the ldap.group.dnattributes directive
+#   
+#
+#
+#   Attribute specified to retrieve unique groups from an existing group.
+#
+# ldap.group.memberattribute=uniquegroup
+#
+#   Filter used to determine (via an LDAP search) if a DN is an actual group 
+#
+# ldap.group.dnattributes=groupofnames groupofuniquenames
+
+#   This is used to limit the depth of "subgroup" searches.  This type of search
+#   can be very intensive on an ldap server.  There is also the case where
+#   group 1 has group 2 as a member, and group2 has group 1 as a member.  
+#   This directive limits the depth of the search.
+#   In the above example, group1 is depth 1, group2 is depth2, group3 is 
+#   depth 3.
+#
+# ldap.group.search.depth=1
